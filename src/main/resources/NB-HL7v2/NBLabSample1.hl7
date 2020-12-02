@@ -1,0 +1,8 @@
+MSH|^~\&|LAB^LAB|SJR^829^829|||20201021115003||ORU^R01|Q326208810T332380099|D|2.4||\F\2020:10:21 11:50.505||||8859/1
+                          PID|1||840571^^^&829&L^NBDOHFAC||TESTING^WEEZIE||19740129|F|||42 LILA COURT^^QUISPAMSIS^NB-HL7v2^E2E6B1^CAN^H~~^^^^^^B~~^^^^^^M|||||||10960776^^^&RHA2|478955297
+                          OBR|1|305120183_SCM^^RHA2^RHAPONUM|MB-20-000435^^RHA2^RHAFONUM|21370^COVID-19 SJRH^RHA2LAB||20201021114300|20201021114300|||||||20201021114300||480^Andrew^Donald^M^^^^^MD&NBMS^^^^PRN|||||002BFW333|20201021115003||LAB|F|||||||||||||||||||Category En^Microbiology^L^Category Fr^Microbiologie^L|||External ID^002BFW333MB200004355Q326208810T332380099829^L829^Specimen Number^MB-20-000435^L829
+                          ZOBR|S||||MB-20-000435\F\002BFW333MB200004355Q326208810T332380099829\F\RHA2\F\20201021115002\F\|5\F\Microbiology\F\Microbiologie|COVID-19 SJRH\F\||000000145574
+                          OBX|1|FT|XNB1842-4^SARS-CoV-2; Rapid Test; PCR/NAAT^LNEN^XNB1842-4^SARS-CoV-2; Test Rapide; RCP/TAAN^LNFR||Detection of COVID-19 (2019-nCoV) virus by PCR: NEGATIVE||||||F|||20201021115002
+                          ZOBX|SARS-CoV-2; Rapid Test; PCR/NAAT\F\SARS-CoV-2; Test Rapide; RCP/TAAN
+                          OBX|2|FT|XNB955-5^Comment^LNEN^XNB955-5^Commentaire^LNFR||Reason for testing:contact\.br\Health Care Worker:no\.br\Asymptomatic:yes||||||F|||20201021115002
+                          ZOBX|Comment\F\Commentaire
