@@ -34,12 +34,13 @@ import java.util.Map;
  * Use Observation resource
  *
  */
-public class App 
+public class Main
 {
     public static void main( String[] args )
     {
-
-        PocLogging.log( "Starting HAPI FHIR test app" );
+        PocLogging.log("=================================================================================");
+        PocLogging.log("======= Starting HAPI FHIR test app==============================================");
+        PocLogging.log("=================================================================================");
 
         /*
         Expected arguments:
@@ -48,27 +49,36 @@ public class App
             If 2 arguments: input file for messages, followed by file name for the output results/message (e.g. JSON FHIR messages)
          */
 
+        //show args
+        PocLogging.log(String.format("Arguments provided: %d", args.length));
+        for(String arg: args) {
+            PocLogging.log("   arg=" + arg);
+        }
+
         PocLogging.log("Working Directory = " + System.getProperty("user.dir"));
         loadAndTestConceptMappers();
 
+        PocLogging.log("=========== TEST HL7 messages");
+
         List<String> messageList;
 
-        if (args.length == 0) {
+        if (args.length == 0 || args[0] == null) {
             messageList = loadDefaultTestMessages();
         } else {
             messageList = FileUtil.readHL7TextMessages(args[0]);
         }
 
+        PocLogging.log(String.format("\nMessages loaded: %d", messageList.size()));
+
         for (String msg: messageList) {
-            PocLogging.log("=================================================================================");
-            PocLogging.log("=================================================================================");
+            PocLogging.log("");
+            PocLogging.log(">>>>> Start raw message");
             PocLogging.log(msg);
+            PocLogging.log("<<<<< End raw message");
             String preprocessedMsg = NBLabORUMessageHelper.preProcessTextMessage(msg);
-            PocLogging.log("=================== Pre-processed text message   ================================");
-            PocLogging.log(preprocessedMsg);
             Message hl7Message = HL7v2Parser.parseMessage(preprocessedMsg);
             if (hl7Message == null) {
-                PocLogging.log("Message failed to parse");
+                PocLogging.error("Message failed to parse");
                 continue;
             }
 
@@ -119,23 +129,22 @@ public class App
     }
 
     private static void loadAndTestConceptMappers() {
-        PocLogging.log("=================================================================================");
-        PocLogging.log("============================= FHIR ==============================================");
+        PocLogging.log("=========== Test ConceptMaps");
 
         ConceptMapper conceptMapper = ConceptMapper.getInstance();
 
         //test mapping function
         String code = "work";
         String targetCode1 = conceptMapper.mapCode(MappingType.ADDRESS_FHIR_V3, code);
-        PocLogging.log(String.format("Mapping: %s ==> %s", code, targetCode1));
+        PocLogging.log(String.format("Mapping test: %s ==> %s", code, targetCode1));
 
         code = "02427648";
         String targetCode2 = conceptMapper.mapCode(MappingType.MP_NTP, code);
-        PocLogging.log(String.format("Mapping: %s ==> %s  (should be 9000672)", code, targetCode2));
+        PocLogging.log(String.format("Mapping test: %s ==> %s  (should be 9000672)", code, targetCode2));
 
         code = "9014390";
         String targetCode3 = conceptMapper.mapCode(MappingType.NTP_TM, code);
-        PocLogging.log(String.format("Mapping: %s ==> %s (should be 8002346)", code, targetCode3));
+        PocLogging.log(String.format("Mapping test: %s ==> %s (should be 8002346)", code, targetCode3));
     }
 
 

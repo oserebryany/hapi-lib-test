@@ -36,6 +36,7 @@ public class ConceptMapper {    //a singleton class
     }
 
     private void loadAllMaps() {
+        PocLogging.log("loadAllMaps: Clearing and reloading all concept maps");
         clearAllMaps();
         for (MappingType mType: MappingType.values()) {
             ConceptMap conceptMap = loadConceptMapResource(mType);

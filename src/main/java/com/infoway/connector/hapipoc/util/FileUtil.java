@@ -75,7 +75,7 @@ public class FileUtil {
 
     public static List<String> readHL7TextMessages(String fileName) {
 
-        PocLogging.log(String.format("readHL7TextMessages: Request to read messages from file: %s", fileName));
+        PocLogging.log(String.format("readHL7TextMessages: Read messages from file: %s", fileName));
 
         File file = new File(fileName);
 
@@ -85,14 +85,11 @@ public class FileUtil {
             is = new BufferedInputStream(is);
             Hl7InputStreamMessageStringIterator iter = new Hl7InputStreamMessageStringIterator(is);
 
-            PocLogging.log(String.format("Reading data from file: %s", fileName));
             while (iter.hasNext()) {
                 String nextStringMsg = iter.next();
-                PocLogging.log(String.format("%s", nextStringMsg));
+                //PocLogging.log(String.format("%s", nextStringMsg));
                 messageList.add(nextStringMsg);
             }
-
-            PocLogging.log(String.format("\n==> Read %d messages", messageList.size()));
 
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
