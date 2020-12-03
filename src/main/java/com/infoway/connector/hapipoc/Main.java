@@ -35,9 +35,7 @@ public class Main
         PocLogging.log("Working Directory = " + System.getProperty("user.dir"));
 
         TestConceptMaps.loadAndTestConceptMappers(args);
-
         TestHL7Parsing.parseHL7v2Messages(args);
-
         TestFhirResources.playWithFhir(args);
 
     }

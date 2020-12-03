@@ -1,0 +1,132 @@
+{
+  "resourceType": "ConceptMap",
+  "id": "2.16.840.1.113883.2.20.3.459",
+  "meta": {
+    "versionId": "20201201"
+  },
+  "url": "https://fhir.infoway-inforoute.ca/ConceptMap/nblabobservationstatus",
+  "identifier": {
+    "id": "2.16.840.1.113883.2.20.3.459"
+  },
+  "version": "20201201",
+  "name": "NBLabObservationStatus",
+  "status": "active",
+  "date": "2020-12-01T00:00:00-05:00",
+  "publisher": "Canada Health Infoway",
+  "group": [
+    {
+      "element": [
+        {
+          "code": "C",
+          "display": "Record coming over is a correction and thus replaces a final result",
+          "target": [
+            {
+              "code": "amended",
+              "display": "Subsequent to being Final, the observation has been modified to correct an error in the test result."
+            }
+          ]
+        },
+        {
+          "code": "F",
+          "display": "Final results",
+          "target": [
+            {
+              "code": "final",
+              "display": "The observation is complete and there are no further actions needed. Additional information such \"released\", \"signed\", etc. would be represented using Provenance which provides not only the act but also the actors and dates and other related data."
+            }
+          ]
+        },
+        {
+          "code": "I",
+          "display": "Specimen in lab, results pending",
+          "target": [
+            {
+              "code": "registered",
+              "display": "The existence of the observation is registered, but there is no result yet available."
+            }
+          ]
+        },
+        {
+          "code": "N",
+          "display": "Not asked",
+          "target": [
+            {
+              "code": "unknown",
+              "display": "The authoring/source system does not know which of the status values currently applies for this observation. Note: This concept is not to be used for \"other\" - one of the listed statuses is presumed to apply, but the authoring/source system does not know which"
+            }
+          ]
+        },
+        {
+          "code": "O",
+          "display": "Order detail description only (no result)",
+          "target": [
+            {
+              "code": "registered",
+              "display": "The existence of the observation is registered, but there is no result yet available"
+            }
+          ]
+        },
+        {
+          "code": "P",
+          "display": "Preliminary results",
+          "target": [
+            {
+              "code": "preliminary",
+              "display": "This is an initial or interim observation: data may be incomplete or unverified"
+            }
+          ]
+        },
+        {
+          "code": "R",
+          "display": "Results entered – not verified",
+          "target": [
+            {
+              "code": "preliminary",
+              "display": "This is an initial or interim observation: data may be incomplete or unverified"
+            }
+          ]
+        },
+        {
+          "code": "S",
+          "display": "Partial results",
+          "target": [
+            {
+              "code": "preliminary",
+              "display": "This is an initial or interim observation: data may be incomplete or unverified"
+            }
+          ]
+        },
+        {
+          "code": "U",
+          "display": "Results status change to final without retransmitting results",
+          "target": [
+            {
+              "code": "final",
+              "display": "The observation is complete and there are no further actions needed. Additional information such \"released\", \"signed\", etc. would be represented using Provenance which provides not only the act but also the actors and dates and other related data"
+            }
+          ]
+        },
+        {
+          "code": "W",
+          "display": "Post original as wrong",
+          "target": [
+            {
+              "code": "entered-in-error",
+              "display": "The observation has been withdrawn following previous final release. This electronic record should never have existed, though it is possible that real-world decisions were based on it. (If real-world activity has occurred, the status"
+            }
+          ]
+        },
+        {
+          "code": "X",
+          "display": "Results cannot be obtained for this observation",
+          "target": [
+            {
+              "code": "unknown",
+              "display": "The authoring/source system does not know which of the status values currently applies for this observation. Note: This concept is not to be used for \"other\" - one of the listed statuses is presumed to apply, but the authoring/source system does not know which"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

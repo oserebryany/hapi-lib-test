@@ -1,0 +1,202 @@
+{
+  "resourceType": "ConceptMap",
+  "id": "2.16.840.1.113883.2.20.3.462",
+  "meta": {
+    "versionId": "20201201"
+  },
+  "url": "https://fhir.infoway-inforoute.ca/ConceptMap/nblabobservationinterpretation",
+  "identifier": {
+    "id": "2.16.840.1.113883.2.20.3.462"
+  },
+  "version": "20201201",
+  "name": "NBLabObservationInterpretation",
+  "status": "active",
+  "date": "2020-12-01T00:00:00-05:00",
+  "publisher": "Canada Health Infoway",
+  "group": [
+    {
+      "element": [
+        {
+          "code": "<",
+          "display": "Below absolute low-off instrument scale",
+          "target": [
+            {
+              "code": "<",
+              "display": "Off scale low"
+            }
+          ]
+        },
+        {
+          "code": ">",
+          "display": "Above absolute high-off instrument scale",
+          "target": [
+            {
+              "code": ">",
+              "display": "Off scale high"
+            }
+          ]
+        },
+        {
+          "code": "A",
+          "display": "Abnormal (applies to non-numeric results)",
+          "target": [
+            {
+              "code": "A",
+              "display": "Abnormal"
+            }
+          ]
+        },
+        {
+          "code": "AA",
+          "display": "Very abnormal (applies to non-numeric units, analogous to panic limits for numeric units)",
+          "target": [
+            {
+              "code": "AA",
+              "display": "Critical abnormal"
+            }
+          ]
+        },
+        {
+          "code": "B",
+          "display": "Better-use when direction not relevant",
+          "target": [
+            {
+              "code": "B",
+              "display": "Better"
+            }
+          ]
+        },
+        {
+          "code": "D",
+          "display": "Significant change down",
+          "target": [
+            {
+              "code": "D",
+              "display": "Significant change down"
+            }
+          ]
+        },
+        {
+          "code": "H",
+          "display": "Above high normal",
+          "target": [
+            {
+              "code": "H",
+              "display": "High"
+            }
+          ]
+        },
+        {
+          "code": "HH",
+          "display": "Above upper panic limits",
+          "target": [
+            {
+              "code": "HH",
+              "display": "Critical high"
+            }
+          ]
+        },
+        {
+          "code": "I",
+          "display": "Intermediate. Indicates for microbiology susceptibilities only",
+          "target": [
+            {
+              "code": "I",
+              "display": "Intermediate"
+            }
+          ]
+        },
+        {
+          "code": "L",
+          "display": "Below low normal",
+          "target": [
+            {
+              "code": "L",
+              "display": "Low"
+            }
+          ]
+        },
+        {
+          "code": "LL",
+          "display": "Below lower panic limits",
+          "target": [
+            {
+              "code": "LL",
+              "display": "Critical low"
+            }
+          ]
+        },
+        {
+          "code": "MS",
+          "display": "Moderately susceptible. Indicates for microbiology susceptibilities only",
+          "target": [
+            {
+              "code": "S",
+              "display": "Susceptible"
+            }
+          ]
+        },
+        {
+          "code": "N",
+          "display": "Normal (applies to non-numeric results)",
+          "target": [
+            {
+              "code": "N",
+              "display": "Normal"
+            }
+          ]
+        },
+        {
+          "code": "R",
+          "display": "Resistant. Indicates for microbiology susceptibilities only",
+          "target": [
+            {
+              "code": "R",
+              "display": "Resistant"
+            }
+          ]
+        },
+        {
+          "code": "S",
+          "display": "Susceptible. Indicates for microbiology susceptibilities only",
+          "target": [
+            {
+              "code": "S",
+              "display": "Susceptible"
+            }
+          ]
+        },
+        {
+          "code": "U",
+          "display": "Significant change up",
+          "target": [
+            {
+              "code": "U",
+              "display": "Significant change up"
+            }
+          ]
+        },
+        {
+          "code": "VS",
+          "display": "Very susceptible. Indicates for microbiology susceptibilities only",
+          "target": [
+            {
+              "code": "S",
+              "display": "Susceptible"
+            }
+          ]
+        },
+        {
+          "code": "W",
+          "display": "Worse-use when direction not relevant",
+          "target": [
+            {
+              "code": "W",
+              "display": "Worse"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
