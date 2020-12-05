@@ -1,5 +1,6 @@
-package com.infoway.connector.hapipoc.hl7v2.NB;
+package com.infoway.connector.hapipoc.NB;
 
+import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Segment;
 import ca.uhn.hl7v2.model.v24.message.ORU_R01;
 import ca.uhn.hl7v2.model.v24.group.*;
@@ -8,9 +9,12 @@ import ca.uhn.hl7v2.model.v24.segment.OBX;
 import ca.uhn.hl7v2.model.v24.segment.OBR;
 import ca.uhn.hl7v2.model.Varies;
 import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.parser.PipeParser;
+import com.infoway.connector.hapipoc.conceptmapping.ConceptMapper;
+import com.infoway.connector.hapipoc.conceptmapping.MappingType;
 import com.infoway.connector.hapipoc.util.PocLogging;
+import org.hl7.fhir.r4.model.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,10 +29,10 @@ import java.util.Map;
  *     PID - Patient Identification Segment
  *     PV1 – Patient Visit Segment
  *   ORDER OBSERVATION (repeating)
- *     OBR - Observation Request Segment
- *       ORC - Common Order Segment
- *       OBR - Observation Request Segment
- *       OBX – Observation Segment (repeating)
+ *          OBR - Observation Request Segment
+ *          OBSERVATION (repeating)
+ *              ORC - Common Order Segment
+ *              OBX – Observation Segment
  *
  */
 
@@ -49,6 +53,123 @@ public class NBLabORUMessageHelper {
         newMsg = newMsg.replaceAll("ZOBX", "ZBX");
         return newMsg;
     }
+
+    /*
+        Return "S" or "T"
+     */
+    public static String singleOrTextual(Message hl7Message) {
+        ORU_R01 oru = (ORU_R01) hl7Message;
+        ORU_R01_PATIENT_RESULT patientResult = oru.getPATIENT_RESULT();
+        ORU_R01_ORDER_OBSERVATION orderObservation = patientResult.getORDER_OBSERVATION();
+        String singleOrTextual = "Unknown";
+        try {
+            Segment zobr = (Segment) orderObservation.get("ZBR");
+            singleOrTextual = zobr.getField(1)[0].encode();
+        } catch (ca.uhn.hl7v2.HL7Exception ex) {
+            PocLogging.log("ORU Message does not contain ZBR segment, exception: " + ex);
+        }
+        return singleOrTextual;
+    }
+
+    public static Resource buildFhirObservation(Message hl7Message) {
+        ORU_R01 oru = (ORU_R01) hl7Message;
+        ORU_R01_PATIENT_RESULT patientResult = oru.getPATIENT_RESULT();
+
+        Observation ob = new Observation();
+        try {
+            String identifierString = NBLabORUMessageHelper.extractIdentifier(patientResult);
+            ob.addIdentifier().setValue(identifierString);
+
+            String hl7ObSatus= NBLabORUMessageHelper.extractStatus(patientResult);
+            String fhirStatus = ConceptMapper.getInstance().mapCode(MappingType.NB_LAB_OBSERVATION_STATUS, hl7ObSatus);
+            ob.setStatus(Observation.ObservationStatus.fromCode(fhirStatus));
+
+            Type value = NBLabORUMessageHelper.extractObservationValue(patientResult);
+            ob.setValue(value);
+        } catch (Exception ex) {
+            PocLogging.error("Failed to build Observation from HL7 message. Exception: " + ex);
+            throw new RuntimeException(ex);
+        }
+
+        return ob;
+    }
+
+    public static Resource buildFhirDiagnosticReport(Message hl7Message) {
+        DiagnosticReport dr = new DiagnosticReport();
+        return dr;
+    }
+
+    /*
+    Assume to use OBR-3 + OBX-3 + OBX-4
+    TBD with Gevity.
+     */
+    private static String extractIdentifier(ORU_R01_PATIENT_RESULT patientResult) throws HL7Exception {
+        ORU_R01_ORDER_OBSERVATION orderObservation = patientResult.getORDER_OBSERVATION();
+        String obr3 = orderObservation.getOBR().getObr3_FillerOrderNumber().encode();
+        String obx3 = orderObservation.getOBSERVATION().getOBX().getObx3_ObservationIdentifier().encode();
+        String obx4 = orderObservation.getOBSERVATION().getOBX().getObx4_ObservationSubId().encode();
+
+        String result = obr3;
+        if (!obx3.isEmpty()) result = result + "-" + obx3;
+        if (!obx4.isEmpty()) result = result + "-" + obx4;
+        return result;
+    }
+
+    private static String extractStatus(ORU_R01_PATIENT_RESULT patientResult) throws HL7Exception {
+        OBX obx = patientResult.getORDER_OBSERVATION().getOBSERVATION().getOBX();
+        String status = obx.getObx11_ObservationResultStatus().encode();
+        return status;
+    }
+
+
+//    private String extractX(ORU_R01_PATIENT_RESULT patientResult) throws HL7Exception {
+//        String type = obx.getObx3_ObservationIdentifier().getCe2_Text().getValue();
+//        String status = obx.getObservationResultStatus().getValue();
+//        for (Varies varies : obx.getObx5_ObservationValue()) {
+//            String value = varies.encode();
+//            String obSum = String.format("VALUE: [%s], TYPE: [%s], STATUS: [%s]", value, type, status);
+//            PocLogging.log(obSum);
+//            observationDetailList.add(obSum);
+//        }
+//    }
+
+    /*
+
+     */
+    private static Type extractObservationValue(ORU_R01_PATIENT_RESULT patientResult) throws HL7Exception {
+        OBX obx = patientResult.getORDER_OBSERVATION().getOBSERVATION().getOBX();
+        //use OBX-2 to determine the type
+        //Observed types: FT (formatted text), TX (text), NM (numeric)
+
+        Type typeOfValue = null;
+        String valueTypeStr = obx.getObx2_ValueType().encode();
+        switch (valueTypeStr) {
+            case "TX":
+            case "FT":
+                StringType st = new StringType();
+                st.setValue(obx.getObx5_ObservationValue()[0].encode());
+
+                typeOfValue = st;
+                break;
+            case "NM":
+                Quantity quantity = new Quantity();   //need value and units of measure
+                String value = obx.getObx5_ObservationValue()[0].encode();
+                String unit = obx.getObx6_Units().getCe1_Identifier().encode();
+                quantity.setValue(Double.parseDouble(value));
+                quantity.setUnit(unit);
+
+                typeOfValue = quantity;
+                break;
+            default:
+                throw new RuntimeException("Unrecognized observation value type: " + valueTypeStr);
+        }
+
+        return typeOfValue;
+    }
+
+//    Segment msh = (Segment) hl7Message.get("MSH");
+//    String msgType = msh.getField(9, 0).encode().substring(0, 3);   //ADT, ORU, etc.
+
 
     public static Map collectData(Message hl7Message) {
         Map results = new HashMap();

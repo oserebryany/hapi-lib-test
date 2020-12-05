@@ -1,14 +1,12 @@
 package com.infoway.connector.hapipoc;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.fhirpath.IFhirPath;
 import ca.uhn.fhir.parser.IParser;
+import com.infoway.connector.hapipoc.fhir.InfowayPatient;
 import com.infoway.connector.hapipoc.fhir.InfowayFhirResoureFactory;
 import com.infoway.connector.hapipoc.fhir.NBLabObservation;
 import com.infoway.connector.hapipoc.util.PocLogging;
 import org.hl7.fhir.r4.model.*;
-
-import java.util.List;
 
 public class TestFhirResources {
 
@@ -23,21 +21,34 @@ public class TestFhirResources {
         IParser parser = ctx.newJsonParser();
         //IFhirPath fhirPath = FhirContext.forR4().newFhirPath();
 
-        Patient patient = InfowayFhirResoureFactory.createPatient();
+        InfowayPatient patient = InfowayFhirResoureFactory.createPatient();
         patient.setId("test123");
 
         Identifier id = patient.addIdentifier();
-        id.setSystem("http://terminology.hl7.org/CodeSystem/v2-0203");
-        id.setValue("MRN001");
+        //for JPID identifier
+        /*
+        {
+            "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                    "code": "JPID"
+            }
+            ]
+        }
+        */
+        Coding jpidIdentifier = new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "JPID", null);
+        id.setType(new CodeableConcept().addCoding(jpidIdentifier));
+        id.setSystem("https://fhir.infoway-inforoute.ca/NamingSystem/ca-nb-patient-healthcare-id");
+        id.setValue("SAMPLE_12345");
 
-        Identifier identifier = new Identifier();
-//        identifier.s
-//
-//        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-//                "code": "JPID"
+        patient.setBirthsex(Enumerations.AdministrativeGender.FEMALE);
+        patient.setGender(Enumerations.AdministrativeGender.FEMALE);
 
-        patient.addIdentifier();
-
+        parser.setPrettyPrint(true);
+        String serialized = parser.encodeResourceToString(patient);
+        PocLogging.log("---------------------- Patient FHIR JSON -------------------------------------");
+        PocLogging.log(serialized);
+        PocLogging.log("-------------------------------------------------------------------------------");
 
 
 //        List<Extension> result = fhirPath.evaluate(patient, "Patient.extension('https://simplifier.net/phiaccess/extensionbirthsex')", Extension.class);
@@ -55,8 +66,8 @@ public class TestFhirResources {
         observation.getText().setDivAsString("<div>This is the narrative text<br/>this is line 2</div>");
 
 
-        String serialized = parser.encodeResourceToString(observation);
-        System.out.println(serialized);
+        serialized = parser.encodeResourceToString(observation);
+        PocLogging.log(serialized);
 
     }
 }

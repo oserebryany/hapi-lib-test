@@ -11,7 +11,7 @@ import org.hl7.fhir.r4.model.codesystems.AdministrativeGender;
 
 @ResourceDef(name="Patient",
         profile = "https://simplifier.net/phiaccess/accesspatientprofile")
-public class InfoWayPatient extends Patient {
+public class InfowayPatient extends Patient {
        private static final long serialVersionUID = 1L;
 //
 //       @Child(

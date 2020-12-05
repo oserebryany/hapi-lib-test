@@ -6,7 +6,7 @@ import ca.uhn.hl7v2.model.Segment;
 import ca.uhn.hl7v2.model.v24.message.ADT_A01;
 import ca.uhn.hl7v2.model.v24.message.ORU_R01;
 import com.infoway.connector.hapipoc.hl7v2.HL7v2Parser;
-import com.infoway.connector.hapipoc.hl7v2.NB.NBLabORUMessageHelper;
+import com.infoway.connector.hapipoc.NB.NBLabORUMessageHelper;
 import com.infoway.connector.hapipoc.util.FileUtil;
 import com.infoway.connector.hapipoc.util.PocLogging;
 
