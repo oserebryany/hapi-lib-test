@@ -11,7 +11,6 @@ import ca.uhn.hl7v2.model.Varies;
 import ca.uhn.hl7v2.model.Message;
 import com.infoway.connector.hapipoc.conceptmapping.ConceptMapper;
 import com.infoway.connector.hapipoc.conceptmapping.MappingType;
-import com.infoway.connector.hapipoc.util.PocLogging;
 import org.hl7.fhir.r4.model.*;
 
 import java.math.BigDecimal;
@@ -19,6 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * An HL7 message has the following components:
@@ -37,6 +38,7 @@ import java.util.Map;
  */
 
 public class NBLabORUMessageHelper {
+    private static final Logger LOGGER = Logger.getLogger(Thread.currentThread().getStackTrace()[0].getClassName());
 
     /*
     NB HL7 v2 messages have some custom segments which are 4 letters long:
@@ -59,14 +61,13 @@ public class NBLabORUMessageHelper {
      */
     public static String singleOrTextual(Message hl7Message) {
         ORU_R01 oru = (ORU_R01) hl7Message;
-        ORU_R01_PATIENT_RESULT patientResult = oru.getPATIENT_RESULT();
-        ORU_R01_ORDER_OBSERVATION orderObservation = patientResult.getORDER_OBSERVATION();
+        ORU_R01_ORDER_OBSERVATION orderObservation = oru.getPATIENT_RESULT().getORDER_OBSERVATION();
         String singleOrTextual = "Unknown";
         try {
             Segment zobr = (Segment) orderObservation.get("ZBR");
             singleOrTextual = zobr.getField(1)[0].encode();
         } catch (ca.uhn.hl7v2.HL7Exception ex) {
-            PocLogging.log("ORU Message does not contain ZBR segment, exception: " + ex);
+            LOGGER.info("ORU Message does not contain ZBR segment, exception: " + ex);
         }
         return singleOrTextual;
     }
@@ -87,7 +88,7 @@ public class NBLabORUMessageHelper {
             Type value = NBLabORUMessageHelper.extractObservationValue(patientResult);
             ob.setValue(value);
         } catch (Exception ex) {
-            PocLogging.error("Failed to build Observation from HL7 message. Exception: " + ex);
+            LOGGER.log( Level.SEVERE, ex.toString(), ex );
             throw new RuntimeException(ex);
         }
 
@@ -95,8 +96,19 @@ public class NBLabORUMessageHelper {
     }
 
     public static Resource buildFhirDiagnosticReport(Message hl7Message) {
+        ORU_R01 oru = (ORU_R01) hl7Message;
+        ORU_R01_PATIENT_RESULT patientResult = oru.getPATIENT_RESULT();
+
         DiagnosticReport dr = new DiagnosticReport();
+        try {
+            String identifierString = NBLabORUMessageHelper.extractIdentifier(patientResult);
+            dr.addIdentifier().setValue(identifierString);
+        } catch (Exception ex) {
+            LOGGER.log( Level.SEVERE, ex.toString(), ex );
+            throw new RuntimeException(ex);
+        }
         return dr;
+
     }
 
     /*
@@ -105,12 +117,12 @@ public class NBLabORUMessageHelper {
      */
     private static String extractIdentifier(ORU_R01_PATIENT_RESULT patientResult) throws HL7Exception {
         ORU_R01_ORDER_OBSERVATION orderObservation = patientResult.getORDER_OBSERVATION();
-        String obr3 = orderObservation.getOBR().getObr3_FillerOrderNumber().encode();
-        String obx3 = orderObservation.getOBSERVATION().getOBX().getObx3_ObservationIdentifier().encode();
+        String obr3Identifier = orderObservation.getOBR().getObr3_FillerOrderNumber().getEi1_EntityIdentifier().encode();
+        String obx3Identifier = orderObservation.getOBSERVATION().getOBX().getObx3_ObservationIdentifier().getCe1_Identifier().encode();
         String obx4 = orderObservation.getOBSERVATION().getOBX().getObx4_ObservationSubId().encode();
 
-        String result = obr3;
-        if (!obx3.isEmpty()) result = result + "-" + obx3;
+        String result = obr3Identifier;
+        if (!obx3Identifier.isEmpty()) result = result + "-" + obx3Identifier;
         if (!obx4.isEmpty()) result = result + "-" + obx4;
         return result;
     }
@@ -128,7 +140,7 @@ public class NBLabORUMessageHelper {
 //        for (Varies varies : obx.getObx5_ObservationValue()) {
 //            String value = varies.encode();
 //            String obSum = String.format("VALUE: [%s], TYPE: [%s], STATUS: [%s]", value, type, status);
-//            PocLogging.log(obSum);
+//            LOGGER.info(obSum);
 //            observationDetailList.add(obSum);
 //        }
 //    }
@@ -229,7 +241,7 @@ public class NBLabORUMessageHelper {
                         Segment zobr = (Segment) patientResult.getORDER_OBSERVATION().get("ZBR");
                         singleOrTextual = zobr.getField(1)[0].encode();
                     } catch (ca.uhn.hl7v2.HL7Exception ex) {
-                        PocLogging.log("ORU Message does not contain ZBR segement, exception: " + ex);
+                        LOGGER.info("ORU Message does not contain ZBR segement, exception: " + ex);
                     }
                     orderObservationMap.put("SingleOrTextual", singleOrTextual);
 
@@ -255,7 +267,7 @@ public class NBLabORUMessageHelper {
                         for (Varies varies : obx.getObx5_ObservationValue()) {
                             String value = varies.encode();
                             String obSum = String.format("VALUE: [%s], TYPE: [%s], STATUS: [%s]", value, type, status);
-                            PocLogging.log(obSum);
+                            LOGGER.info(obSum);
                             observationDetailList.add(obSum);
                         }
 
@@ -270,7 +282,7 @@ public class NBLabORUMessageHelper {
             }
             results.put("patientResultsList", patientResultList);
         } catch (Exception ex) {
-            PocLogging.log("Error processing message, Exception:\n" + ex);
+            LOGGER.info("Error processing message, Exception:\n" + ex);
             ex.printStackTrace();
         }
         return results;

@@ -3,14 +3,15 @@ package com.infoway.connector.hapipoc.conceptmapping;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.infoway.connector.hapipoc.util.FileUtil;
-import com.infoway.connector.hapipoc.util.PocLogging;
 import org.hl7.fhir.r4.model.ConceptMap;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 //https://www.journaldev.com/1377/java-singleton-design-pattern-best-practices-examples#bill-pugh-singleton
 public class ConceptMapper {    //a singleton class
+    private static final Logger LOGGER = Logger.getLogger(Thread.currentThread().getStackTrace()[0].getClassName());
 
     private Map<MappingType, Map> maps = new HashMap<>();
     private FhirContext ctx;
@@ -36,13 +37,13 @@ public class ConceptMapper {    //a singleton class
     }
 
     private void loadAllMaps() {
-        PocLogging.log("loadAllMaps: Clearing and reloading all concept maps");
+        LOGGER.info("loadAllMaps: Clearing and reloading all concept maps");
         clearAllMaps();
         for (MappingType mType: MappingType.values()) {
             ConceptMap conceptMap = loadConceptMapResource(mType);
             Map mappings = extractMappingsFromConceptMap(conceptMap);
             maps.put(mType, mappings);
-            PocLogging.log(String.format("  Added concept map %s, # of mapped codes: %d", mType.name(), mappings.size()));
+            LOGGER.info(String.format("  Added concept map %s, # of mapped codes: %d", mType.name(), mappings.size()));
         }
     }
 
@@ -58,7 +59,7 @@ public class ConceptMapper {    //a singleton class
 
     private ConceptMap loadConceptMapResource(MappingType mType) {
         String fname = mType.getResourceFileName();
-        PocLogging.log(String.format("Loading concept map %s from file: %s", mType.name(), fname));
+        LOGGER.info(String.format("Loading concept map %s from file: %s", mType.name(), fname));
         String conceptMapJsonString = FileUtil.readResourceFile(fname);
         ConceptMap conceptMap = this.parser.parseResource(ConceptMap.class, conceptMapJsonString);
         return conceptMap;

@@ -2,26 +2,20 @@ package com.infoway.connector.hapipoc;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.Segment;
-import ca.uhn.hl7v2.model.v24.message.ADT_A01;
-import ca.uhn.hl7v2.model.v24.message.ORU_R01;
-import com.infoway.connector.hapipoc.NB.NBLabORUMessageHelper;
 import com.infoway.connector.hapipoc.NB.NBLabTranslation;
-import com.infoway.connector.hapipoc.hl7v2.HL7v2Parser;
 import com.infoway.connector.hapipoc.util.FileUtil;
-import com.infoway.connector.hapipoc.util.PocLogging;
 import org.hl7.fhir.r4.model.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class TestNBLabTranslation {
+    private static final Logger LOGGER = Logger.getLogger(Thread.currentThread().getStackTrace()[0].getClassName());
 
     public static void translateTestMessages(String[] args) {
-        PocLogging.log("=========== Test NB Lab translation");
+        LOGGER.info("=========== Test NB Lab translation");
 
         List<String> messageList;
 
@@ -31,7 +25,7 @@ public class TestNBLabTranslation {
             messageList = FileUtil.readHL7TextMessages(args[0]);
         }
 
-        PocLogging.log(String.format("\nMessage loaded: %d", messageList.size()));
+        LOGGER.info(String.format("\nMessage loaded: %d", messageList.size()));
 
         NBLabTranslation nbLab = new NBLabTranslation();
         Bundle bundle = nbLab.process(messageList);
@@ -43,8 +37,10 @@ public class TestNBLabTranslation {
         parser.setPrettyPrint(true);
         String bundleJson = parser.encodeResourceToString(bundle);
 
-        PocLogging.log("-------------------------------- BUNDLE JSON -----------------------");
-        PocLogging.log(bundleJson);
+        LOGGER.info("-------------------------------- BUNDLE JSON -----------------------");
+        LOGGER.info(bundleJson);
+
+        FileUtil.writeToFile("./fhiroutput/fhir.json", bundleJson);
     }
 
 

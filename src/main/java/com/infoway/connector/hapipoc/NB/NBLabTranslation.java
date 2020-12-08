@@ -3,7 +3,6 @@ package com.infoway.connector.hapipoc.NB;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.Segment;
 import com.infoway.connector.hapipoc.hl7v2.HL7v2Parser;
-import com.infoway.connector.hapipoc.util.PocLogging;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Observation;
@@ -11,8 +10,10 @@ import org.hl7.fhir.r4.model.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class NBLabTranslation {
+    private static final Logger LOGGER = Logger.getLogger(Thread.currentThread().getStackTrace()[0].getClassName());
 
     /*
     Translate individual observation messages and build a response bundle
@@ -42,7 +43,7 @@ public class NBLabTranslation {
             String preprocessedMsg = NBLabORUMessageHelper.preProcessTextMessage(msgString);
             Message hl7Message = HL7v2Parser.parseMessage(preprocessedMsg);
             if (hl7Message == null) {
-                PocLogging.error("Message failed to parse");
+                LOGGER.severe("Message failed to parse");
                 continue;
             }
 

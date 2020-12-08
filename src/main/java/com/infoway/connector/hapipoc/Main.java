@@ -1,6 +1,10 @@
 package com.infoway.connector.hapipoc;
 
-import com.infoway.connector.hapipoc.util.PocLogging;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 /**
  This application uses HAPI Java library to test the following concepts:
@@ -11,13 +15,20 @@ import com.infoway.connector.hapipoc.util.PocLogging;
  - Initialize FHIR resource and deserialize as JSON (e.g. Observation)
  **/
 
-public class Main
-{
+public class Main {
+    private static final Logger LOGGER = Logger.getLogger(Thread.currentThread().getStackTrace()[0].getClassName());
+    private static final LogManager logManager = LogManager.getLogManager();
+    static{
+        try {
+            logManager.readConfiguration(new FileInputStream("./logging.properties"));
+        } catch (IOException exception) {
+            LOGGER.log(Level.SEVERE, "Error in loading configuration",exception);
+        }
+    }
+
     public static void main( String[] args )
     {
-        PocLogging.log("=================================================================================");
-        PocLogging.log("======= Starting HAPI FHIR test app =============================================");
-        PocLogging.log("=================================================================================");
+        LOGGER.info("================================ Starting HAPI FHIR test app =================================================");
 
         /*
         Expected arguments:
@@ -27,19 +38,19 @@ public class Main
          */
 
         //show args
-        PocLogging.log(String.format("Arguments provided: %d", args.length));
+        LOGGER.info(String.format("Arguments provided: %d", args.length));
         for(String arg: args) {
-            PocLogging.log("   arg=" + arg);
+            LOGGER.info("   arg=" + arg);
         }
 
-        PocLogging.log("Working Directory = " + System.getProperty("user.dir"));
+        LOGGER.info("Working Directory = " + System.getProperty("user.dir"));
 
 
         TestNBLabTranslation.translateTestMessages(args);
 
-//        TestConceptMaps.loadAndTestConceptMappers(args);
-//        TestHL7Parsing.parseHL7v2Messages(args);
-//        TestFhirResources.playWithFhir(args);
+        TestConceptMaps.loadAndTestConceptMappers(args);
+        TestHL7Parsing.parseHL7v2Messages(args);
+        TestFhirResources.playWithFhir(args);
 
     }
 

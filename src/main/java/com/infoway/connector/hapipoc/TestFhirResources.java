@@ -5,13 +5,15 @@ import ca.uhn.fhir.parser.IParser;
 import com.infoway.connector.hapipoc.fhir.InfowayPatient;
 import com.infoway.connector.hapipoc.fhir.InfowayFhirResoureFactory;
 import com.infoway.connector.hapipoc.fhir.NBLabObservation;
-import com.infoway.connector.hapipoc.util.PocLogging;
 import org.hl7.fhir.r4.model.*;
 
+import java.util.logging.Logger;
+
 public class TestFhirResources {
+    private static final Logger LOGGER = Logger.getLogger(Thread.currentThread().getStackTrace()[0].getClassName());
 
     public static void playWithFhir(String[] args) {
-        PocLogging.log("=========== Test FHIR resources");
+        LOGGER.info("=========== Test FHIR resources");
 
         /********
          * WORK IN PROGRESS.....................
@@ -46,9 +48,9 @@ public class TestFhirResources {
 
         parser.setPrettyPrint(true);
         String serialized = parser.encodeResourceToString(patient);
-        PocLogging.log("---------------------- Patient FHIR JSON -------------------------------------");
-        PocLogging.log(serialized);
-        PocLogging.log("-------------------------------------------------------------------------------");
+        LOGGER.info("---------------------- Patient FHIR JSON -------------------------------------");
+        LOGGER.info(serialized);
+        LOGGER.info("-------------------------------------------------------------------------------");
 
 
 //        List<Extension> result = fhirPath.evaluate(patient, "Patient.extension('https://simplifier.net/phiaccess/extensionbirthsex')", Extension.class);
@@ -67,7 +69,7 @@ public class TestFhirResources {
 
 
         serialized = parser.encodeResourceToString(observation);
-        PocLogging.log(serialized);
+        LOGGER.info(serialized);
 
     }
 }

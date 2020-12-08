@@ -13,11 +13,13 @@ import com.infoway.connector.hapipoc.util.PocLogging;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class TestHL7Parsing {
+    private static final Logger LOGGER = Logger.getLogger(Thread.currentThread().getStackTrace()[0].getClassName());
 
     public static void parseHL7v2Messages(String[] args) {
-        PocLogging.log("=========== TEST HL7 messages");
+        LOGGER.info("=========== TEST HL7 messages");
 
         List<String> messageList;
 
@@ -27,31 +29,31 @@ public class TestHL7Parsing {
             messageList = FileUtil.readHL7TextMessages(args[0]);
         }
 
-        PocLogging.log(String.format("\nMessages loaded: %d", messageList.size()));
+        LOGGER.info(String.format("\nMessages loaded: %d", messageList.size()));
 
         for (String msg : messageList) {
-            PocLogging.log("");
-            PocLogging.log(">>>>> Start raw message");
-            PocLogging.log(msg);
-            PocLogging.log("<<<<< End raw message");
+            LOGGER.info("");
+            LOGGER.info(">>>>> Start raw message");
+            LOGGER.info(msg);
+            LOGGER.info("<<<<< End raw message");
             String preprocessedMsg = NBLabORUMessageHelper.preProcessTextMessage(msg);
             Message hl7Message = HL7v2Parser.parseMessage(preprocessedMsg);
             if (hl7Message == null) {
-                PocLogging.error("Message failed to parse");
+                LOGGER.severe("Message failed to parse");
                 continue;
             }
 
-            PocLogging.log("Message Class: " + hl7Message.getClass());
+            LOGGER.info("Message Class: " + hl7Message.getClass());
             try {
                 Segment msh = (Segment) hl7Message.get("MSH");
                 String msgType = msh.getField(9, 0).encode().substring(0, 3);   //ADT, ORU, etc.
-                PocLogging.log("Message Type: " + msgType);
+                LOGGER.info("Message Type: " + msgType);
 
                 if (hl7Message instanceof ADT_A01) {
                     Segment zpiGenericSegment = (Segment) hl7Message.get("ZPI");
                     String firstPetName = zpiGenericSegment.getField(1, 0).encode();
                     String secondPetName = zpiGenericSegment.getField(1, 1).encode();
-                    PocLogging.log("here 1");
+                    LOGGER.info("here 1");
                 }
                 if (hl7Message instanceof ORU_R01) {
 
@@ -59,7 +61,7 @@ public class TestHL7Parsing {
                     PocLogging.logMapStrings(oruData);
                 }
             } catch (HL7Exception ex) {
-                PocLogging.log("ERROR: Error parsing custom HL7 v2 message.  " + ex);
+                LOGGER.info("ERROR: Error parsing custom HL7 v2 message.  " + ex);
             }
         }
     }

@@ -8,8 +8,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FileUtil {
+    private static final Logger LOGGER = Logger.getLogger(Thread.currentThread().getStackTrace()[0].getClassName());
 
 
     private static InputStream getFileFromResourceAsStream(String fileName) {
@@ -29,7 +32,7 @@ public class FileUtil {
 
     public static String readResourceFile(String fileName) {
 
-        //PocLogging.log(String.format("readResourceFile: Reading contents of file: %s", fileName));
+        //LOGGER.info(String.format("readResourceFile: Reading contents of file: %s", fileName));
 
         InputStream is = getFileFromResourceAsStream(fileName);
         InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.UTF_8);
@@ -47,7 +50,7 @@ public class FileUtil {
 
 //    public static String readResourceFile(String fileName) {
 //
-//        PocLogging.log(String.format("readResourceFile: Reading contents of file: %s", fileName));
+//        LOGGER.info(String.format("readResourceFile: Reading contents of file: %s", fileName));
 //
 //        Class clazz = FileUtil.class;
 //        File file = new File(clazz.getClassLoader().getResource(fileName).getFile());
@@ -61,7 +64,7 @@ public class FileUtil {
 //            }
 //            return sb.toString();
 //        } catch (IOException ex) {
-//            PocLogging.log(String.format("ERROR in readResouceFile, %s", ex));
+//            LOGGER.info(String.format("ERROR in readResouceFile, %s", ex));
 //            throw new RuntimeException(ex);
 //        }
 //    }
@@ -75,7 +78,7 @@ public class FileUtil {
 
     public static List<String> readHL7TextMessages(String fileName) {
 
-        PocLogging.log(String.format("readHL7TextMessages: Read messages from file: %s", fileName));
+        LOGGER.info(String.format("readHL7TextMessages: Read messages from file: %s", fileName));
 
         File file = new File(fileName);
 
@@ -87,7 +90,7 @@ public class FileUtil {
 
             while (iter.hasNext()) {
                 String nextStringMsg = iter.next();
-                //PocLogging.log(String.format("%s", nextStringMsg));
+                //LOGGER.info(String.format("%s", nextStringMsg));
                 messageList.add(nextStringMsg);
             }
 
@@ -101,4 +104,15 @@ public class FileUtil {
         return messageList;
     }
 
+
+    public static void writeToFile(String fileName, String content) {
+        try {
+            OutputStreamWriter writer = new OutputStreamWriter(
+                    new FileOutputStream(fileName), "UTF-8");
+            writer.write(content);
+            writer.close();
+        } catch (Exception ex) {
+            LOGGER.log( Level.SEVERE, ex.toString(), ex );
+        }
+    }
 }
