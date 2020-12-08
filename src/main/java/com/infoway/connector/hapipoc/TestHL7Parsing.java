@@ -56,9 +56,8 @@ public class TestHL7Parsing {
                     LOGGER.info("here 1");
                 }
                 if (hl7Message instanceof ORU_R01) {
-
-                    Map oruData = NBLabORUMessageHelper.collectData(hl7Message);
-                    PocLogging.logMapStrings(oruData);
+                    String singleOrText = NBLabORUMessageHelper.singleOrTextual(hl7Message);
+                    LOGGER.info("HL7 NB Lab observation type: " + singleOrText);
                 }
             } catch (HL7Exception ex) {
                 LOGGER.info("ERROR: Error parsing custom HL7 v2 message.  " + ex);

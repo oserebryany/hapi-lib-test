@@ -48,9 +48,9 @@ public class Main {
 
         TestNBLabTranslation.translateTestMessages(args);
 
-        TestConceptMaps.loadAndTestConceptMappers(args);
-        TestHL7Parsing.parseHL7v2Messages(args);
-        TestFhirResources.playWithFhir(args);
+//        TestConceptMaps.loadAndTestConceptMappers(args);
+//        TestHL7Parsing.parseHL7v2Messages(args);
+//        TestFhirResources.playWithFhir(args);
 
     }
 
